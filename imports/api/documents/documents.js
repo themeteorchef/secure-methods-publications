@@ -26,6 +26,10 @@ Documents.schema = new SimpleSchema({
     type: String,
     label: 'The body of the document.',
   },
+  owner: {
+    type: String,
+    label: 'The ID of the owner of this document.',
+  },
 });
 
 Documents.attachSchema(Documents.schema);
