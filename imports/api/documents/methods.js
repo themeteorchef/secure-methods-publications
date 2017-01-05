@@ -13,13 +13,10 @@ export const upsertDocument = new ValidatedMethod({
     body: { type: String, optional: true },
   }).validator(),
   run(document) {
-    return isAuthorized({ userId: this.userId, documentId: document._id })
-    .then((owner) => {
-      const documentToInsert = document;
-      documentToInsert.owner = owner;
-      return Documents.upsert({ _id: document._id }, { $set: documentToInsert });
-    })
-    .catch((error) => { throw new Meteor.Error('500', error); });
+    const documentToInsert = document;
+    const owner = isAuthorized({ userId: this.userId, documentId: document._id });
+    documentToInsert.owner = owner;
+    return Documents.upsert({ _id: document._id }, { $set: documentToInsert });
   },
 });
 
@@ -29,11 +26,9 @@ export const removeDocument = new ValidatedMethod({
     _id: { type: String },
   }).validator(),
   run(document) {
-    return isAuthorized({ userId: this.userId, documentId: document._id })
-    .then(() => {
+    if (isAuthorized({ userId: this.userId, documentId: document._id })) {
       Documents.remove(document._id);
-    })
-    .catch((error) => { throw new Meteor.Error('500', error); });
+    }
   },
 });
 
